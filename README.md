@@ -19,11 +19,11 @@ Optional dependencies (install with `pip`):
 
 ---
 
-## Installation
-
+## Installatio
 ```bash
 # Clone or download the script, then run directly
-python organizer.py ~/Downloads
+python organizer.py ~n
+/Downloads
 ```
 
 No setup required. All state files (history, tags, log) are written inside the target folder.
