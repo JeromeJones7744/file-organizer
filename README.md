@@ -43,7 +43,7 @@ Drop this tool on any messy folder and it automatically sorts files into clean s
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/file-organizer.git
+git clone https://github.com/JeromeJones7744/file-organizer.git
 cd file-organizer
 
 # Install optional dependencies (core needs nothing)
@@ -153,7 +153,7 @@ A clean two-tab interface built with tkinter:
 
 **Tags tab** — add and remove tags by filename, search by tag, live-refreshing tagged file list, and an output console showing results in real time.
 
-> 📸 *Screenshot coming soon — run `python -m file_organizer --gui` to see it live.*
+> 📸 *Add a screenshot here: save a screenshot of the GUI as `screenshot.png` in the repo root, then replace this line with `![GUI Screenshot](screenshot.png)`*
 
 ---
 
@@ -163,7 +163,7 @@ A clean two-tab interface built with tkinter:
 python -m file_organizer ~/Downloads --watch
 ```
 
-Monitors the folder in real time using `watchdog`. Any file dropped in is automatically organized. Waits for file size to stabilize before moving (safe for downloads in progress).
+Monitors the folder in real time using `watchdog`. Any file dropped in is automatically organized. Waits for file size to stabilize before moving — safe for downloads in progress.
 
 ---
 
