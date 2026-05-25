@@ -1,46 +1,59 @@
-# File Organizer
+<div align="center">
 
-A Python package that automatically sorts files in a folder into categorized subfolders by file type. Supports tagging, undo, duplicate handling, watch mode, filtering, reporting, and a full GUI.
-
----
-
-## Requirements
-
-- Python 3.8+
-- No required third-party packages for core functionality
-
-Optional dependencies (install with `pip`):
-
-| Package | Feature enabled |
-|---|---|
-| `watchdog` | `--watch` mode (auto-organize on drop) |
-| `tqdm` | `--progress` progress bar |
-| `tkinter` | `--gui` graphical interface (usually bundled with Python) |
-
----
-
-## Installation
-
-```bash
-# Clone or download, then run as a package
-python -m file_organizer ~/Downloads
+```
+███████╗██╗██╗     ███████╗     ██████╗ ██████╗  ██████╗ ███████╗
+██╔════╝██║██║     ██╔════╝    ██╔═══██╗██╔══██╗██╔════╝ ██╔════╝
+█████╗  ██║██║     █████╗      ██║   ██║██████╔╝██║  ███╗███████╗
+██╔══╝  ██║██║     ██╔══╝      ██║   ██║██╔══██╗██║   ██║╚════██║
+██║     ██║███████╗███████╗    ╚██████╔╝██║  ██║╚██████╔╝███████║
+╚═╝     ╚═╝╚══════╝╚══════╝     ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝
 ```
 
-No setup required. All state files are written inside the target folder.
+**A Python tool that automatically sorts your files so you don't have to.**
+
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)
+![Tests](https://img.shields.io/badge/Tests-33%20passing-brightgreen?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Portfolio%20Project-orange?style=flat-square)
+
+[Features](#features) • [Quick Start](#quick-start) • [CLI Reference](#all-cli-flags) • [Tagging](#tagging) • [GUI](#gui) • [Changelog](#changelog)
+
+</div>
+
+---
+
+## What It Does
+
+Drop this tool on any messy folder and it automatically sorts files into clean subfolders by type — images, documents, code, music, and more. Built with Python's standard library, no installation required for core features.
+
+**Highlights:**
+- 🗂️ Sorts files by extension into categorized subfolders
+- 🏷️ Tag files with custom labels and filter by tag
+- ↩️ Full undo support — reverse any session instantly
+- 🔍 Duplicate detection via MD5 hashing
+- 👁️ Dry run mode — preview everything before touching files
+- 📊 HTML and CSV report generation
+- 🖥️ GUI with two-tab layout (Organize + Tags)
+- 👀 Watch mode — auto-organizes files as they're added
+- 🚨 Suspicious file scanner
 
 ---
 
 ## Quick Start
 
 ```bash
-# Preview — no files are moved
+# Clone the repo
+git clone https://github.com/yourusername/file-organizer.git
+cd file-organizer
+
+# Install optional dependencies (core needs nothing)
+pip install -r requirements.txt
+
+# Preview what would happen — nothing is moved
 python -m file_organizer ~/Downloads --dry-run
 
 # Organize for real
 python -m file_organizer ~/Downloads
-
-# Undo the last session
-python -m file_organizer ~/Downloads --undo
 
 # Launch the GUI
 python -m file_organizer --gui
@@ -48,7 +61,11 @@ python -m file_organizer --gui
 
 ---
 
-## Default Categories
+## Features
+
+### 🗂️ Smart File Sorting
+
+Files are automatically routed into subfolders based on extension:
 
 | Folder | Extensions |
 |---|---|
@@ -59,7 +76,112 @@ python -m file_organizer --gui
 | `Archives` | `.zip` `.tar` `.gz` `.rar` `.7z` |
 | `Code` | `.py` `.js` `.ts` `.html` `.css` `.java` `.c` `.cpp` |
 | `Other` | Anything not matched above |
-| `Duplicates` | Exact duplicate files (when duplicate routing is active) |
+| `Duplicates` | Exact duplicate files (configurable) |
+
+---
+
+### 🏷️ Tagging System
+
+Attach custom labels to files and use them to filter organize runs or search across your folder.
+
+```bash
+# Tag a file
+python -m file_organizer ~/Downloads --tag report.pdf budget review
+
+# Search for files by tag (AND logic)
+python -m file_organizer ~/Downloads --search-tag budget review
+
+# Only organize files tagged 'budget'
+python -m file_organizer ~/Downloads --filter-tag budget --dry-run
+
+# Remove a tag
+python -m file_organizer ~/Downloads --untag report.pdf review
+
+# List all tagged files
+python -m file_organizer ~/Downloads --list-tags
+```
+
+Tags are stored in `.organize_tags.json` using relative paths. When a file moves, its tag entry is **automatically updated** — tags never go stale.
+
+```json
+{
+  "Documents/report.pdf": ["budget", "review"],
+  "Images/photo.jpg": ["portfolio"]
+}
+```
+
+---
+
+### ↩️ Undo
+
+Every move session is logged. One command reverses it entirely.
+
+```bash
+python -m file_organizer ~/Downloads --undo
+```
+
+Up to 50 sessions stored. Does not apply to copy operations.
+
+---
+
+### 🔍 Duplicate Detection
+
+Exact duplicates are detected via MD5 hash comparison. Four strategies available:
+
+| Strategy | Behavior |
+|---|---|
+| `route` *(default)* | Move duplicate to a `Duplicates/` folder |
+| `newest` | Keep the more recently modified file |
+| `oldest` | Keep the older file |
+| `ask` | Prompt you for each duplicate individually |
+
+```bash
+python -m file_organizer ~/Downloads --keep-duplicate newest
+```
+
+---
+
+### 🖥️ GUI
+
+```bash
+python -m file_organizer --gui
+```
+
+A clean two-tab interface built with tkinter:
+
+**Organize tab** — all options in one place: dry run, recursive, date folders, copy mode, verify, duplicate strategy, log, reports, and a tag filter field.
+
+**Tags tab** — add and remove tags by filename, search by tag, live-refreshing tagged file list, and an output console showing results in real time.
+
+> 📸 *Screenshot coming soon — run `python -m file_organizer --gui` to see it live.*
+
+---
+
+### 👀 Watch Mode
+
+```bash
+python -m file_organizer ~/Downloads --watch
+```
+
+Monitors the folder in real time using `watchdog`. Any file dropped in is automatically organized. Waits for file size to stabilize before moving (safe for downloads in progress).
+
+---
+
+### 🚨 Suspicious File Scanner
+
+```bash
+python -m file_organizer ~/Downloads --scan-recursive
+```
+
+Scans for file types commonly associated with malware or unintended execution. Reports findings grouped by category — does **not** move or delete anything.
+
+| Category | Examples |
+|---|---|
+| Executable | `.exe` `.com` `.scr` `.pif` |
+| Script | `.bat` `.ps1` `.vbs` `.hta` and more |
+| System/Driver | `.dll` `.sys` `.drv` |
+| MacroDoc | `.xlsm` `.docm` `.pptm` |
+| DiskImage | `.iso` `.img` |
 
 ---
 
@@ -74,46 +196,31 @@ python -m file_organizer --gui
 | `--watch` | Monitor folder and auto-organize new files |
 | `--gui` | Launch the graphical interface |
 | `--stats-only` | Count files by type without moving anything |
-| `--scan` | Scan folder for suspicious file extensions |
-| `--scan-recursive` | Same as `--scan`, includes subfolders |
+| `--scan` | Scan for suspicious file extensions |
+| `--scan-recursive` | Scan including subfolders |
 
 ### Organization
 
 | Flag | Description |
 |---|---|
 | `--recursive` | Organize files in subfolders too |
-| `--rename` | Prefix each filename with today's date (`YYYY-MM-DD_`) |
+| `--rename` | Prefix filenames with today's date (`YYYY-MM-DD_`) |
 | `--by-date` | Sort into `Category/YYYY/MonthName/` subfolders |
 | `--copy` | Copy files instead of moving them |
 | `--verify` | Checksum-verify each file after copy or move |
 | `--interactive` | Confirm each file action individually |
 | `--config FILE` | Load custom category-to-extension map from JSON |
-| `--keep-duplicate STRATEGY` | How to handle exact duplicates (see below) |
-
-**Duplicate strategies:**
-
-| Strategy | Behavior |
-|---|---|
-| `route` | Move duplicate to a `Duplicates/` folder *(default)* |
-| `newest` | Keep whichever file was modified more recently |
-| `oldest` | Keep whichever file was modified earlier |
-| `ask` | Prompt you to decide for each duplicate individually |
+| `--keep-duplicate` | `route` / `newest` / `oldest` / `ask` |
 
 ### Tagging
 
 | Flag | Description |
 |---|---|
-| `--tag FILE TAG [TAG...]` | Add one or more tags to a file |
-| `--untag FILE TAG [TAG...]` | Remove one or more tags from a file |
-| `--list-tags` | List every tagged file and its tags |
-| `--search-tag TAG [TAG...]` | Search tagged files by tag — AND logic |
-| `--filter-tag TAG [TAG...]` | Only organize files that have ALL specified tags |
-
-Tags use AND logic: `--search-tag budget review` only returns files tagged with **both**.
-
-Tags are stored in `.organize_tags.json`. When a file is moved, its tag entry is automatically updated — tags never go stale.
-
-If you tag a file using just its basename (e.g. `report.pdf`) and two tagged files share that name, the tool warns you and asks for the relative path instead.
+| `--tag FILE TAG [TAG...]` | Add tags to a file |
+| `--untag FILE TAG [TAG...]` | Remove tags from a file |
+| `--list-tags` | List all tagged files and their tags |
+| `--search-tag TAG [TAG...]` | Search by tag — AND logic, shows ✓/✗ per result |
+| `--filter-tag TAG [TAG...]` | Only organize files matching ALL specified tags |
 
 ### Filters
 
@@ -123,74 +230,25 @@ If you tag a file using just its basename (e.g. `report.pdf`) and two tagged fil
 | `--max-size SIZE` | Skip files larger than SIZE (e.g. `1GB`) |
 | `--older-than DAYS` | Only include files older than N days |
 | `--newer-than DAYS` | Only include files newer than N days |
-| `--ignore PATTERN...` | Add glob patterns to skip list (e.g. `"*.tmp"`) |
-
-Size units: `B`, `KB`, `MB`, `GB`, `TB`. Case-insensitive.
+| `--ignore PATTERN...` | Add glob patterns to skip (e.g. `"*.tmp"`) |
 
 ### Output
 
 | Flag | Description |
 |---|---|
 | `--log` | Write a timestamped log to `organize_log.txt` |
-| `--html-report` | Generate an `organize_report.html` summary |
-| `--csv-report` | Generate an `organize_report.csv` summary |
+| `--html-report` | Generate an HTML summary report |
+| `--csv-report` | Generate a CSV summary report |
 | `--progress` | Show a progress bar (requires `tqdm`) |
+| `--rules JSON` | Keyword routing rules (see below) |
 
 ### Custom Rules
 
 ```bash
---rules '[{"contains": "invoice", "category": "Finance"}]'
-```
-
-JSON array of keyword rules. Rules are checked before the extension map, so they take priority.
-
----
-
-## Usage Examples
-
-```bash
-# Dry run preview
-python -m file_organizer ~/Downloads --dry-run
-
-# Recursive organization with date subfolders
-python -m file_organizer ~/Downloads --recursive --by-date
-
-# Copy and verify
-python -m file_organizer ~/Downloads --copy --verify
-
-# Only move files larger than 1MB older than 30 days
-python -m file_organizer ~/Downloads --min-size 1MB --older-than 30
-
-# Count files by type without moving
-python -m file_organizer ~/Downloads --stats-only
-
-# Skip specific patterns
-python -m file_organizer ~/Downloads --ignore "*.tmp" "~*" "draft_*"
-
-# Auto-keep newest on duplicate
-python -m file_organizer ~/Downloads --keep-duplicate newest
-
-# Confirm each move
-python -m file_organizer ~/Downloads --interactive
-
-# Custom routing rule
 python -m file_organizer ~/Downloads --rules '[{"contains":"invoice","category":"Finance"}]'
-
-# Scan for suspicious files
-python -m file_organizer ~/Downloads --scan-recursive
-
-# Watch mode
-python -m file_organizer ~/Downloads --watch
-
-# Tagging
-python -m file_organizer ~/Downloads --tag report.pdf budget review
-python -m file_organizer ~/Downloads --untag report.pdf review
-python -m file_organizer ~/Downloads --list-tags
-python -m file_organizer ~/Downloads --search-tag budget
-python -m file_organizer ~/Downloads --search-tag budget review
-python -m file_organizer ~/Downloads --filter-tag budget
-python -m file_organizer ~/Downloads --filter-tag budget review --dry-run
 ```
+
+Rules are checked before the extension map — they always take priority.
 
 ---
 
@@ -202,7 +260,7 @@ file_organizer/
 ├── __main__.py       # Enables python -m file_organizer
 ├── constants.py      # All constants + OrganizerConfig dataclass
 ├── core.py           # organize_folder(), filters, helpers, stats
-├── tags.py           # Tagging system
+├── tags.py           # Full tagging system
 ├── history.py        # save_history(), undo_last()
 ├── reports.py        # HTML + CSV report generation
 ├── scanner.py        # Suspicious file detection
@@ -211,9 +269,25 @@ file_organizer/
 └── cli.py            # argparse + main()
 
 test_organizer.py     # 33 pytest tests
-requirements.txt      # Optional dependencies
+requirements.txt      # Dependencies
 README.md
 ```
+
+---
+
+## Testing
+
+```bash
+pip install pytest
+pytest test_organizer.py -v
+```
+
+**33 tests** covering:
+- Core organize (move, dry run, multiple files, unknown extensions)
+- Undo (single file, multiple files, no history edge case)
+- Duplicate detection and all 4 strategies
+- Size and date filters including boundary conditions
+- Full tagging system including tags following files on move
 
 ---
 
@@ -227,105 +301,41 @@ README.md
 | `organize_report.html` | HTML report (opt-in via `--html-report`) |
 | `organize_report.csv` | CSV report (opt-in via `--csv-report`) |
 
-All auto-generated files are skipped by the organizer — they will never be moved or tagged.
-
----
-
-## How Undo Works
-
-Every move session is saved to `.organize_history.json`. `--undo` reverses the most recent session in reverse order. Up to 50 sessions stored. Does not apply to copy operations.
-
----
-
-## How Tagging Works
-
-Tags are stored as a JSON dictionary using relative file paths as keys:
-
-```json
-{
-  "Documents/report.pdf": ["budget", "review"],
-  "Images/photo.jpg": ["portfolio"]
-}
-```
-
-**Path tracking:** Tag keys are automatically rewritten when files move.
-**AND logic:** `--search-tag` and `--filter-tag` require ALL specified tags to match.
-**Ambiguity detection:** If two files share a basename, the tool warns you and requires the relative path.
-
----
-
-## Suspicious File Scanner
-
-| Category | Extensions |
-|---|---|
-| Executable | `.exe` `.com` `.scr` `.pif` |
-| Script | `.bat` `.cmd` `.vbs` `.ps1` `.js` `.hta` and more |
-| System/Driver | `.dll` `.sys` `.drv` |
-| Installer | `.msi` `.msp` |
-| Registry | `.reg` |
-| Java | `.jar` |
-| MacroDoc | `.xlsm` `.docm` `.pptm` `.xlam` |
-| DiskImage | `.iso` `.img` |
-
-Reports findings grouped by category. Does not move or delete files.
-
----
-
-## GUI
-
-```bash
-python -m file_organizer --gui
-```
-
-Two-tab layout:
-
-**Organize tab** — all organize options including dry run, recursive, date folders, copy mode, verify, duplicate handling, log, reports, and a tag filter field.
-
-**Tags tab** — add/remove tags, search by tag, live-refreshing file list, output console. Folder field stays in sync with the Organize tab automatically.
-
----
-
-## Testing
-
-```bash
-pip install pytest
-pytest test_organizer.py -v
-```
-
-33 tests covering: core organize, dry run, undo, duplicate detection and strategies, size/date filters, and the full tagging system including tags following files on move.
+All auto-generated files are automatically skipped — they will never be moved or tagged.
 
 ---
 
 ## Changelog
 
-### v4 — Bug fixes + search tag + module split
-- Fixed `except Exception` in `verify_copy()` → `except OSError` with warning message
-- Fixed `except Exception` in `organize_folder()` → `except (OSError, shutil.Error)`
-- Fixed `except Exception` in watch mode `on_created()` → `except (OSError, shutil.Error)`
-- Fixed `_resolve_tag_key()` silently returning first basename match when multiple files share a name — now warns and requires relative path
-- Added `--search-tag` CLI flag: search tagged files with AND logic, shows `✓`/`✗ missing` per result
-- Split single 1,293-line script into 10 focused modules
-- Added `__main__.py` — tool now runs via `python -m file_organizer`
-- Added 33 pytest tests covering core, undo, duplicates, filters, and full tagging system
+### v4 — Bug fixes · Search tag · Module split
+- Fixed broad `except Exception` in three locations → specific `OSError` / `shutil.Error`
+- Fixed `_resolve_tag_key()` silently returning wrong file on ambiguous basename match — now warns and requires relative path
+- Added `--search-tag`: search tagged files with AND logic, shows `✓`/`✗ missing` per result
+- Refactored single 1,293-line script into 10 focused modules
+- Added `__main__.py` — runs via `python -m file_organizer`
+- Added 33 pytest tests
 
 ### v3 — Tagging system
-- Added user-defined file tagging (`--tag`, `--untag`, `--list-tags`, `--filter-tag`)
-- Tags stored in `.organize_tags.json` using relative paths for portability
-- Tags automatically follow files when they are moved during an organize run
-- GUI: added tabbed layout with dedicated Tags tab
-- `OrganizerConfig` gains `filter_tags: List[str]` field
+- Added `--tag`, `--untag`, `--list-tags`, `--filter-tag`
+- Tags stored in `.organize_tags.json` with relative paths
+- Tags automatically follow files on move
+- GUI: tabbed layout with dedicated Tags tab
 
 ### v2 — Stability and features
-- Fixed inverted date filters, recursive path duplication, missing constant NameError, GUI crash
-- Added recursive, stats-only, scan, HTML/CSV reports, interactive, verify, keep-duplicate
-- Added by-date, rename, progress, watch, rules, ignore, size/date filters, copy, config, GUI
+- Fixed inverted date filters, recursive path duplication, NameError on undo, GUI crash
+- Added recursive, stats-only, scan, reports, interactive, verify, keep-duplicate, watch, and more
 
 ### v1 — Initial release
-- Basic file organization by extension
-- Dry run, undo, MD5 duplicate detection, timestamped rename, optional logging
+- File organization by extension, dry run, undo, MD5 duplicate detection, optional logging
 
 ---
 
 ## License
 
 MIT — free to use, modify, and distribute.
+
+---
+
+<div align="center">
+Built by Jerome Jones
+</div>
