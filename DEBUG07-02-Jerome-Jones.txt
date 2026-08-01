@@ -1,0 +1,69 @@
+// The two senior class homerooms at Littleville High School
+// are having a fundraising drive for the prom. Each time a student
+// solicits a contribution, a record is created with the
+// student's name and the value. Two files have been created for
+// Homeroom A and Homeroom B. Each file is sorted in contribution
+// value order from highest to lowest. This program merges the two files.
+start
+   Declarations
+      string roomAName
+      num roomAValue
+      string roomBName
+      num roomBValue
+      string bothFilesDone = "N"
+      num HIGH_VALUE = 999999
+      InputFile roomAFile
+      InputFile roomBFile
+      OutputFile mergedFile
+   getReady()
+   while bothFilesDone = "N"
+      detailLoop()
+   endwhile
+   allDone()
+stop
+
+getReady()  
+   open roomAFile "roomAFile.dat"
+   open roomBFile "roomBFile.dat"
+   open mergedFile "mergedFile.dat"
+   readA()
+   readB()
+   checkBoth()
+return
+
+readA()
+   input roomAName, roomAValue from roomAFile
+   if eof then
+      roomAValue = HIGH_VALUE
+   endif
+return
+
+readB()
+   input roomBName, roomBValue from roomBFile
+   if eof then
+      roomBValue = HIGH_VALUE
+   endif
+return
+
+checkBoth()
+   if roomAValue = HIGH_VALUE AND roomBValue = HIGH_VALUE then
+      bothFilesDone = "Y"
+   endif
+return
+
+detailLoop()
+   if roomAValue > roomBValue then
+      output roomAName, roomAValue to mergedFile
+      readA()
+   else
+      output roomBName, roomBValue to mergedFile
+      readB()
+   endif
+   checkBoth()
+return
+ 
+allDone()
+   close roomAFile
+   close roomBFile
+   close mergedFile
+return 
